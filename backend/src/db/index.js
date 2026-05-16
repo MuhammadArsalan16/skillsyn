@@ -6,6 +6,9 @@ const pool = new Pool({
   user: process.env.DB_USER || 'skillsync_user',
   password: process.env.DB_PASSWORD || 'skillsync_pass',
   database: process.env.DB_NAME || 'skillsync',
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 module.exports = {
