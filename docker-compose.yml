@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=/api
+    networks:
+      - skillsync_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-skillsync_user}
+      - DB_PASSWORD=${DB_PASSWORD:-skillsync_pass}
+      - DB_NAME=${DB_NAME:-skillsync}
+      - JWT_SECRET=${JWT_SECRET:-supersecretkey}
+      - PORT=5000
+    networks:
+      - skillsync_net
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DB_USER:-skillsync_user}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-skillsync_pass}
+      - POSTGRES_DB=${DB_NAME:-skillsync}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - skillsync_net
+
+volumes:
+  postgres_data:
+
+networks:
+  skillsync_net:
+    driver: bridge

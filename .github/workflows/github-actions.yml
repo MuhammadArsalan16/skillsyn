@@ -1,0 +1,52 @@
+name: SkillSync CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build Docker Compose Stack
+      run: docker compose -f docker-compose.yml build
+
+    # In a real environment, you might run tests here using the built containers.
+    # - name: Run Tests
+    #   run: |
+    #     docker compose up -d
+    #     docker compose exec backend npm test
+    #     docker compose down
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # - name: Login to Azure Container Registry
+    #   uses: azure/docker-login@v1
+    #   with:
+    #     login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+    #     username: ${{ secrets.REGISTRY_USERNAME }}
+    #     password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    # - name: Build and push Backend image
+    #   run: |
+    #     docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/skillsync-backend:${{ github.sha }} ./backend
+    #     docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/skillsync-backend:${{ github.sha }}
+
+    # - name: Build and push Frontend image
+    #   run: |
+    #     docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/skillsync-frontend:${{ github.sha }} ./frontend
+    #     docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/skillsync-frontend:${{ github.sha }}
