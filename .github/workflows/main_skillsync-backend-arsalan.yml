@@ -25,5 +25,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'skillsync-backend-arsalan'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8B040C07E0E943F0AA244C3268B1DA5C }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_CLIENTID_94E9E7D4991F4C2E9879E1FB12C98172 }}
           package: ./backend
